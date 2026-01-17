@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110" width="100" height="110">
+  <defs>
+    <linearGradient id="dragonBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6f00"/>
+      <stop offset="50%" style="stop-color:#d84315"/>
+      <stop offset="100%" style="stop-color:#bf360c"/>
+    </linearGradient>
+    <radialGradient id="dragonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffeb3b;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#ff5722;stop-opacity:0"/>
+    </radialGradient>
+    <filter id="dragonFilter" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Wings -->
+  <path d="M15,40 Q5,35 10,25 L20,30 Z" fill="url(#dragonBodyGrad)" stroke="#bf360c" stroke-width="2" opacity="0.8"/>
+  <path d="M85,40 Q95,35 90,25 L80,30 Z" fill="url(#dragonBodyGrad)" stroke="#bf360c" stroke-width="2" opacity="0.8"/>
+
+  <!-- Tail with mechanical joints -->
+  <path d="M50,95 Q35,100 30,105" stroke="#d84315" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <circle cx="40" cy="100" r="4" fill="#ffab00" filter="url(#dragonFilter)"/>
+  <circle cx="30" cy="105" r="5" fill="#ff5722" filter="url(#dragonFilter)">
+    <animate attributeName="fill" values="#ff5722;#ffeb3b;#ff5722" dur="0.8s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Body -->
+  <ellipse cx="50" cy="60" rx="28" ry="32" fill="url(#dragonBodyGrad)" stroke="#bf360c" stroke-width="2" filter="url(#dragonFilter)"/>
+
+  <!-- Mechanical chest plate -->
+  <rect x="40" y="55" width="20" height="20" rx="3" fill="#424242" stroke="#ffab00" stroke-width="1"/>
+  <circle cx="50" cy="65" r="6" fill="#ffeb3b" stroke="#ff5722" stroke-width="2">
+    <animate attributeName="r" values="6;7;6" dur="1s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Head -->
+  <ellipse cx="50" cy="30" rx="22" ry="20" fill="url(#dragonBodyGrad)" stroke="#bf360c" stroke-width="2"/>
+
+  <!-- Horns -->
+  <path d="M35,25 L30,10 L35,20 Z" fill="#424242" stroke="#ff5722" stroke-width="1"/>
+  <path d="M65,25 L70,10 L65,20 Z" fill="#424242" stroke="#ff5722" stroke-width="1"/>
+  <circle cx="30" cy="10" r="3" fill="#ffeb3b" filter="url(#dragonFilter)">
+    <animate attributeName="opacity" values="1;0.5;1" dur="0.6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="70" cy="10" r="3" fill="#ffeb3b" filter="url(#dragonFilter)">
+    <animate attributeName="opacity" values="1;0.5;1" dur="0.6s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Eyes - mechanical -->
+  <rect x="38" y="28" width="8" height="10" rx="2" fill="#ffeb3b" stroke="#bf360c" stroke-width="1"/>
+  <rect x="54" y="28" width="8" height="10" rx="2" fill="#ffeb3b" stroke="#bf360c" stroke-width="1"/>
+  <circle cx="42" cy="33" r="3" fill="#ff1744">
+    <animate attributeName="fill" values="#ff1744;#ffeb3b;#ff1744" dur="1.2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="58" cy="33" r="3" fill="#ff1744">
+    <animate attributeName="fill" values="#ff1744;#ffeb3b;#ff1744" dur="1.2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Nose with smoke vents -->
+  <rect x="48" y="42" width="4" height="6" rx="1" fill="#424242"/>
+  <circle cx="47" cy="45" r="1.5" fill="#78909c" opacity="0.7">
+    <animate attributeName="cy" from="45" to="38" dur="1s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" from="0.7" to="0" dur="1s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Arms with claws -->
+  <ellipse cx="22" cy="65" rx="8" ry="14" fill="url(#dragonBodyGrad)" stroke="#bf360c" stroke-width="1"/>
+  <ellipse cx="78" cy="65" rx="8" ry="14" fill="url(#dragonBodyGrad)" stroke="#bf360c" stroke-width="1"/>
+  <path d="M22,75 L20,82 L24,82 Z" fill="#424242"/>
+  <path d="M78,75 L76,82 L80,82 Z" fill="#424242"/>
+</svg>

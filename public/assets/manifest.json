@@ -35,6 +35,30 @@
       "file": "monster_red.svg"
     },
     {
+      "key": "mythical_cerberus_robot",
+      "file": "mythical_cerberus_robot.svg"
+    },
+    {
+      "key": "mythical_dragon_robot",
+      "file": "mythical_dragon_robot.svg"
+    },
+    {
+      "key": "mythical_griffin_robot",
+      "file": "mythical_griffin_robot.svg"
+    },
+    {
+      "key": "mythical_hydra_robot",
+      "file": "mythical_hydra_robot.svg"
+    },
+    {
+      "key": "mythical_minotaur_robot",
+      "file": "mythical_minotaur_robot.svg"
+    },
+    {
+      "key": "mythical_phoenix_robot",
+      "file": "mythical_phoenix_robot.svg"
+    },
+    {
       "key": "robot_purple",
       "file": "robot_purple.svg"
     }

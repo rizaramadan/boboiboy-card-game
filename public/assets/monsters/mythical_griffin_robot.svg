@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110" width="100" height="110">
+  <defs>
+    <linearGradient id="griffinGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffd700"/>
+      <stop offset="50%" style="stop-color:#ffa000"/>
+      <stop offset="100%" style="stop-color:#ff6f00"/>
+    </linearGradient>
+    <linearGradient id="griffinSilverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#eceff1"/>
+      <stop offset="50%" style="stop-color:#90a4ae"/>
+      <stop offset="100%" style="stop-color:#546e7a"/>
+    </linearGradient>
+    <filter id="griffinGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Lion body (lower half) -->
+  <ellipse cx="50" cy="75" rx="26" ry="24" fill="url(#griffinGoldGrad)" stroke="#ff6f00" stroke-width="2"/>
+
+  <!-- Mechanical joints on legs -->
+  <rect x="32" y="92" width="8" height="12" rx="2" fill="url(#griffinSilverGrad)" stroke="#546e7a" stroke-width="1"/>
+  <rect x="60" y="92" width="8" height="12" rx="2" fill="url(#griffinSilverGrad)" stroke="#546e7a" stroke-width="1"/>
+  <circle cx="36" cy="95" r="2" fill="#00e5ff" filter="url(#griffinGlow)"/>
+  <circle cx="64" cy="95" r="2" fill="#00e5ff" filter="url(#griffinGlow)"/>
+
+  <!-- Tail -->
+  <path d="M70,80 Q80,85 85,90" stroke="url(#griffinGoldGrad)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <circle cx="85" cy="90" r="4" fill="#ffa000" stroke="#ff6f00" stroke-width="1">
+    <animate attributeName="r" values="4;5;4" dur="0.8s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Eagle body (upper half) -->
+  <ellipse cx="50" cy="50" rx="24" ry="26" fill="url(#griffinSilverGrad)" stroke="#546e7a" stroke-width="2"/>
+
+  <!-- Wings -->
+  <path d="M26,50 Q12,45 8,38 L15,42 Q20,48 26,52 Z"
+        fill="url(#griffinSilverGrad)" stroke="#546e7a" stroke-width="2" opacity="0.9">
+    <animateTransform attributeName="transform" type="rotate"
+                      values="0 26 50;-12 26 50;0 26 50" dur="1s" repeatCount="indefinite"/>
+  </path>
+  <path d="M74,50 Q88,45 92,38 L85,42 Q80,48 74,52 Z"
+        fill="url(#griffinSilverGrad)" stroke="#546e7a" stroke-width="2" opacity="0.9">
+    <animateTransform attributeName="transform" type="rotate"
+                      values="0 74 50;12 74 50;0 74 50" dur="1s" repeatCount="indefinite"/>
+  </path>
+
+  <!-- Mechanical chest plate -->
+  <rect x="42" y="48" width="16" height="18" rx="3" fill="#37474f" stroke="#00e5ff" stroke-width="1.5"/>
+  <circle cx="50" cy="57" r="5" fill="#00e5ff" filter="url(#griffinGlow)">
+    <animate attributeName="fill" values="#00e5ff;#00bcd4;#00e5ff" dur="1s" repeatCount="indefinite"/>
+  </circle>
+  <rect x="45" y="52" width="10" height="3" fill="#546e7a"/>
+
+  <!-- Eagle head -->
+  <ellipse cx="50" cy="28" rx="20" ry="18" fill="url(#griffinSilverGrad)" stroke="#546e7a" stroke-width="2"/>
+
+  <!-- Ear tufts / head crest -->
+  <path d="M35,20 L32,10 L36,18 Z" fill="#90a4ae" stroke="#546e7a" stroke-width="1"/>
+  <path d="M65,20 L68,10 L64,18 Z" fill="#90a4ae" stroke="#546e7a" stroke-width="1"/>
+
+  <!-- Eyes - robotic -->
+  <ellipse cx="42" cy="28" rx="7" ry="8" fill="#00e5ff" stroke="#546e7a" stroke-width="1"/>
+  <ellipse cx="58" cy="28" rx="7" ry="8" fill="#00e5ff" stroke="#546e7a" stroke-width="1"/>
+  <circle cx="42" cy="29" r="4" fill="#0277bd">
+    <animate attributeName="r" values="4;5;4" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="58" cy="29" r="4" fill="#0277bd">
+    <animate attributeName="r" values="4;5;4" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="43" cy="27" r="2" fill="#ffffff"/>
+  <circle cx="59" cy="27" r="2" fill="#ffffff"/>
+
+  <!-- Beak - metallic -->
+  <path d="M50,36 L46,42 L54,42 Z" fill="#ffa000" stroke="#ff6f00" stroke-width="1.5"/>
+  <rect x="48" y="39" width="4" height="2" fill="#546e7a"/>
+
+  <!-- Energy scanner lines -->
+  <line x1="35" y1="28" x2="28" y2="28" stroke="#00e5ff" stroke-width="1" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1s" repeatCount="indefinite"/>
+  </line>
+  <line x1="65" y1="28" x2="72" y2="28" stroke="#00e5ff" stroke-width="1" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="1s" repeatCount="indefinite"/>
+  </line>
+</svg>
