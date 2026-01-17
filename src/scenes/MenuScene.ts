@@ -11,7 +11,7 @@ export class MenuScene extends Phaser.Scene {
   }
 
   create(): void {
-    const { WIDTH, HEIGHT } = GAME_CONFIG;
+    const { WIDTH } = GAME_CONFIG;
 
     // Space background
     this.createSpaceBackground();
