@@ -11,13 +11,21 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    this.setScale(1.2);
+    // Calculate scale based on desired display size (100x100 target)
+    const targetSize = 100;
+    const originalWidth = this.width;
+    const originalHeight = this.height;
+    const scale = (targetSize / Math.max(originalWidth, originalHeight)) * 1.2;
+    
+    this.setScale(scale);
     this.setDepth(10);
 
-    // Set up physics body
+    // Set up physics body - use proportional size based on scaled dimensions
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(80, 100);
-    body.setOffset(10, 15);
+    const bodyWidth = originalWidth * scale * 0.8;
+    const bodyHeight = originalHeight * scale * 0.9;
+    body.setSize(bodyWidth, bodyHeight);
+    body.setOffset((originalWidth - bodyWidth) / 2, (originalHeight - bodyHeight) / 2);
 
     // Create attack power label above hero
     this.attackLabel = scene.add.text(x, y - 80, String(this.attack), {

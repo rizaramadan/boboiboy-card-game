@@ -22,6 +22,7 @@ export class GameScene extends Phaser.Scene {
   private heroAttack: number = GAME_CONFIG.HERO.DEFAULT_ATTACK;
   private heroHealth: number = GAME_CONFIG.HERO.DEFAULT_HEALTH;
   private maxHealth: number = GAME_CONFIG.HERO.DEFAULT_HEALTH;
+  private heroImageData: string | null = null;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -33,6 +34,7 @@ export class GameScene extends Phaser.Scene {
     this.maxHealth = this.heroHealth;
     this.score = 0;
     this.gameOver = false;
+    this.heroImageData = data.heroImage || null;
   }
 
   create(): void {
@@ -44,7 +46,21 @@ export class GameScene extends Phaser.Scene {
 
     // Create hero at bottom center lane
     const startX = GAME_CONFIG.LANES.X_POSITIONS[1]; // Middle lane
-    this.hero = new Hero(this, startX, GAME_CONFIG.HERO.Y_POSITION);
+    
+    // Use scanned hero image if available
+    let heroTexture = 'hero_placeholder';
+    if (this.heroImageData) {
+      // Load the scanned image as a texture
+      if (this.textures.exists('scanned_hero')) {
+        this.textures.remove('scanned_hero');
+      }
+      const img = new Image();
+      img.src = this.heroImageData;
+      this.textures.addImage('scanned_hero', img);
+      heroTexture = 'scanned_hero';
+    }
+    
+    this.hero = new Hero(this, startX, GAME_CONFIG.HERO.Y_POSITION, heroTexture);
     this.hero.setAttack(this.heroAttack);
 
     // Monster group
