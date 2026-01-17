@@ -38,6 +38,36 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    // If we have a scanned hero image, load it first then continue setup
+    if (this.heroImageData) {
+      this.loadScannedHeroImage().then(() => {
+        this.setupGame('scanned_hero');
+      });
+    } else {
+      this.setupGame('hero_placeholder');
+    }
+  }
+
+  private loadScannedHeroImage(): Promise<void> {
+    return new Promise((resolve) => {
+      if (this.textures.exists('scanned_hero')) {
+        this.textures.remove('scanned_hero');
+      }
+      
+      const img = new Image();
+      img.onload = () => {
+        this.textures.addImage('scanned_hero', img);
+        resolve();
+      };
+      img.onerror = () => {
+        console.error('Failed to load scanned hero image');
+        resolve(); // Continue anyway with placeholder
+      };
+      img.src = this.heroImageData!;
+    });
+  }
+
+  private setupGame(heroTexture: string): void {
     // Background
     this.createBackground();
 
@@ -47,20 +77,10 @@ export class GameScene extends Phaser.Scene {
     // Create hero at bottom center lane
     const startX = GAME_CONFIG.LANES.X_POSITIONS[1]; // Middle lane
     
-    // Use scanned hero image if available
-    let heroTexture = 'hero_placeholder';
-    if (this.heroImageData) {
-      // Load the scanned image as a texture
-      if (this.textures.exists('scanned_hero')) {
-        this.textures.remove('scanned_hero');
-      }
-      const img = new Image();
-      img.src = this.heroImageData;
-      this.textures.addImage('scanned_hero', img);
-      heroTexture = 'scanned_hero';
-    }
+    // Use the texture, fallback to placeholder if scanned_hero failed
+    const textureToUse = this.textures.exists(heroTexture) ? heroTexture : 'hero_placeholder';
     
-    this.hero = new Hero(this, startX, GAME_CONFIG.HERO.Y_POSITION, heroTexture);
+    this.hero = new Hero(this, startX, GAME_CONFIG.HERO.Y_POSITION, textureToUse);
     this.hero.setAttack(this.heroAttack);
 
     // Monster group
