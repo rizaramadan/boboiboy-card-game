@@ -2,25 +2,21 @@
   "heroes": [
     {
       "key": "hero_placeholder",
-      "file": "hero_placeholder.svg"
+      "file": "spaceship.svg"
     }
   ],
   "monsters": [
     {
-      "key": "monster_blackdragon",
-      "file": "monster_blackdragon.png"
+      "key": "alien_green",
+      "file": "alien_green.svg"
     },
     {
-      "key": "monster_blue",
-      "file": "monster_blue.svg"
+      "key": "alien_blue",
+      "file": "alien_blue.svg"
     },
     {
-      "key": "monster_green",
-      "file": "monster_green.svg"
-    },
-    {
-      "key": "monster_red",
-      "file": "monster_red.svg"
+      "key": "robot_purple",
+      "file": "robot_purple.svg"
     }
   ],
   "ui": [
@@ -34,7 +30,23 @@
     },
     {
       "key": "smash_effect",
-      "file": "smash_effect.svg"
+      "file": "space_smash.svg"
+    },
+    {
+      "key": "star",
+      "file": "star.svg"
+    },
+    {
+      "key": "star_empty",
+      "file": "star_empty.svg"
+    },
+    {
+      "key": "planet_score",
+      "file": "planet_score.svg"
+    },
+    {
+      "key": "meteor",
+      "file": "meteor.svg"
     }
   ]
 }

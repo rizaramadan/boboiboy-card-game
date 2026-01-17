@@ -1,13 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80">
   <defs>
     <linearGradient id="buttonGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#5c9eff"/>
-      <stop offset="50%" style="stop-color:#4488ff"/>
-      <stop offset="100%" style="stop-color:#2266dd"/>
+      <stop offset="0%" style="stop-color:#9c7cff"/>
+      <stop offset="50%" style="stop-color:#7c4dff"/>
+      <stop offset="100%" style="stop-color:#4a148c"/>
     </linearGradient>
+    <filter id="buttonGlow" x="-10%" y="-25%" width="120%" height="150%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
-  <!-- Button background -->
-  <rect x="2" y="2" width="296" height="76" rx="20" ry="20" fill="url(#buttonGradient)" stroke="#1a4499" stroke-width="3"/>
+  <!-- Button background with glow -->
+  <rect x="2" y="2" width="296" height="76" rx="20" ry="20" fill="url(#buttonGradient)" stroke="#b388ff" stroke-width="3" filter="url(#buttonGlow)"/>
   <!-- Top shine -->
-  <rect x="10" y="8" width="280" height="25" rx="12" ry="12" fill="white" opacity="0.2"/>
+  <rect x="10" y="8" width="280" height="25" rx="12" ry="12" fill="#e0d0ff" opacity="0.2"/>
 </svg>

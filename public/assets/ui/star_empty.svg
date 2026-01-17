@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="emptyStarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#555"/>
+      <stop offset="100%" style="stop-color:#333"/>
+    </linearGradient>
+  </defs>
+  <polygon points="32,4 38,24 58,24 42,38 48,58 32,46 16,58 22,38 6,24 26,24" 
+           fill="url(#emptyStarGrad)" 
+           stroke="#666" 
+           stroke-width="2"
+           opacity="0.5"/>
+</svg>

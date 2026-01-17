@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <radialGradient id="alienGreenBody" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#c5e1a5"/>
+      <stop offset="70%" style="stop-color:#8bc34a"/>
+      <stop offset="100%" style="stop-color:#689f38"/>
+    </radialGradient>
+    <filter id="alienGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Antennae -->
+  <line x1="35" y1="15" x2="30" y2="5" stroke="#689f38" stroke-width="3" stroke-linecap="round"/>
+  <line x1="65" y1="15" x2="70" y2="5" stroke="#689f38" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="30" cy="5" r="4" fill="#ffeb3b" filter="url(#alienGlow)"/>
+  <circle cx="70" cy="5" r="4" fill="#ffeb3b" filter="url(#alienGlow)"/>
+  
+  <!-- Body -->
+  <ellipse cx="50" cy="50" rx="35" ry="38" fill="url(#alienGreenBody)" stroke="#558b2f" stroke-width="2" filter="url(#alienGlow)"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="38" cy="40" rx="10" ry="12" fill="#ffffff"/>
+  <ellipse cx="62" cy="40" rx="10" ry="12" fill="#ffffff"/>
+  <ellipse cx="38" cy="42" rx="6" ry="7" fill="#1a237e"/>
+  <ellipse cx="62" cy="42" rx="6" ry="7" fill="#1a237e"/>
+  <ellipse cx="40" cy="40" rx="3" ry="3" fill="#ffffff"/>
+  <ellipse cx="64" cy="40" rx="3" ry="3" fill="#ffffff"/>
+  
+  <!-- Smile -->
+  <path d="M 35 58 Q 50 70 65 58" fill="none" stroke="#33691e" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Spots -->
+  <circle cx="25" cy="55" r="5" fill="#aed581" opacity="0.6"/>
+  <circle cx="75" cy="55" r="5" fill="#aed581" opacity="0.6"/>
+  <circle cx="50" cy="75" r="4" fill="#aed581" opacity="0.6"/>
+  
+  <!-- Tentacles -->
+  <ellipse cx="25" cy="85" rx="8" ry="12" fill="url(#alienGreenBody)" stroke="#558b2f" stroke-width="1"/>
+  <ellipse cx="50" cy="88" rx="8" ry="10" fill="url(#alienGreenBody)" stroke="#558b2f" stroke-width="1"/>
+  <ellipse cx="75" cy="85" rx="8" ry="12" fill="url(#alienGreenBody)" stroke="#558b2f" stroke-width="1"/>
+</svg>

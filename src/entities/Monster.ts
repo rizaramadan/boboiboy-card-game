@@ -12,7 +12,8 @@ export class Monster extends Phaser.Physics.Arcade.Sprite {
     x: number,
     y: number,
     texture: string,
-    health: number
+    health: number,
+    speedMultiplier: number = 1
   ) {
     super(scene, x, y, texture);
 
@@ -36,16 +37,19 @@ export class Monster extends Phaser.Physics.Arcade.Sprite {
     const bodyHeight = originalHeight * scale * 0.8;
     body.setSize(bodyWidth, bodyHeight);
     body.setOffset((originalWidth - bodyWidth) / 2, (originalHeight - bodyHeight) / 2);
-    body.setVelocityY(GAME_CONFIG.MONSTER.SPEED);
+    body.setVelocityY(GAME_CONFIG.MONSTER.SPEED * speedMultiplier);
 
-    // Create health label above monster
+    // Create health label above monster with space theme
     const labelColor = this.getLabelColor();
     this.healthLabel = scene.add.text(x, y - 60, String(health), {
-      font: 'bold 32px Arial',
+      font: 'bold 28px Arial',
       color: labelColor,
-      stroke: '#000000',
-      strokeThickness: 3,
+      stroke: '#1a0533',
+      strokeThickness: 4,
     }).setOrigin(0.5).setDepth(6);
+
+    // Add glow effect to label
+    this.healthLabel.setShadow(0, 0, labelColor, 8, true, true);
 
     // Wobble animation
     scene.tweens.add({
@@ -60,13 +64,13 @@ export class Monster extends Phaser.Physics.Arcade.Sprite {
   }
 
   private getLabelColor(): string {
-    // Color based on difficulty (health amount)
+    // Space theme colors based on difficulty
     if (this.health <= 30) {
-      return '#00ff00'; // Easy - green
+      return '#00e5ff'; // Easy - cyan
     } else if (this.health <= 50) {
-      return '#ffff00'; // Medium - yellow
+      return '#ffea00'; // Medium - yellow
     } else {
-      return '#ff0000'; // Hard - red
+      return '#ff1744'; // Hard - red
     }
   }
 

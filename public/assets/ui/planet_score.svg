@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" width="120" height="80">
+  <defs>
+    <linearGradient id="planetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a237e"/>
+      <stop offset="50%" style="stop-color:#3949ab"/>
+      <stop offset="100%" style="stop-color:#1a237e"/>
+    </linearGradient>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c4dff;stop-opacity:0"/>
+      <stop offset="30%" style="stop-color:#b388ff"/>
+      <stop offset="70%" style="stop-color:#b388ff"/>
+      <stop offset="100%" style="stop-color:#7c4dff;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="planetGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Ring behind planet -->
+  <ellipse cx="60" cy="40" rx="55" ry="12" fill="none" stroke="url(#ringGrad)" stroke-width="4" opacity="0.6"/>
+  <!-- Planet -->
+  <circle cx="60" cy="40" r="28" fill="url(#planetGrad)" filter="url(#planetGlow)"/>
+  <!-- Planet highlight -->
+  <ellipse cx="50" cy="32" rx="10" ry="8" fill="#7c4dff" opacity="0.3"/>
+  <!-- Ring in front of planet -->
+  <path d="M 15 40 Q 60 52 105 40" fill="none" stroke="url(#ringGrad)" stroke-width="4" opacity="0.8"/>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <radialGradient id="explosionGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="30%" style="stop-color:#00e5ff"/>
+      <stop offset="60%" style="stop-color:#7c4dff"/>
+      <stop offset="100%" style="stop-color:#7c4dff;stop-opacity:0"/>
+    </radialGradient>
+    <filter id="explosionGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Outer burst -->
+  <circle cx="100" cy="100" r="80" fill="url(#explosionGrad)" filter="url(#explosionGlow)" opacity="0.8"/>
+  <!-- Inner rays -->
+  <g fill="#00e5ff" filter="url(#explosionGlow)">
+    <polygon points="100,20 105,70 100,60 95,70"/>
+    <polygon points="100,180 105,130 100,140 95,130"/>
+    <polygon points="20,100 70,95 60,100 70,105"/>
+    <polygon points="180,100 130,95 140,100 130,105"/>
+    <polygon points="45,45 80,75 70,80 75,70"/>
+    <polygon points="155,45 120,75 130,80 125,70"/>
+    <polygon points="45,155 80,125 70,120 75,130"/>
+    <polygon points="155,155 120,125 130,120 125,130"/>
+  </g>
+  <!-- Bright center -->
+  <circle cx="100" cy="100" r="20" fill="#ffffff"/>
+</svg>
