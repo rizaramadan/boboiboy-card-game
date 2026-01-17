@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Red Ogre Monster -->
+  <!-- Body -->
+  <ellipse cx="50" cy="55" rx="35" ry="40" fill="#e63946"/>
+  <ellipse cx="50" cy="55" rx="35" ry="40" fill="url(#redGradient)"/>
+
+  <!-- Gradient for depth -->
+  <defs>
+    <radialGradient id="redGradient" cx="30%" cy="30%">
+      <stop offset="0%" style="stop-color:#ff6b6b"/>
+      <stop offset="100%" style="stop-color:#c1121f"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Horns -->
+  <polygon points="25,25 20,5 35,20" fill="#8b0000"/>
+  <polygon points="75,25 80,5 65,20" fill="#8b0000"/>
+
+  <!-- Eyes -->
+  <ellipse cx="35" cy="45" rx="10" ry="12" fill="white"/>
+  <ellipse cx="65" cy="45" rx="10" ry="12" fill="white"/>
+  <circle cx="37" cy="47" r="5" fill="#1a1a2e"/>
+  <circle cx="67" cy="47" r="5" fill="#1a1a2e"/>
+  <circle cx="38" cy="45" r="2" fill="white"/>
+  <circle cx="68" cy="45" r="2" fill="white"/>
+
+  <!-- Angry eyebrows -->
+  <rect x="25" y="32" width="20" height="4" fill="#8b0000" transform="rotate(15, 35, 34)"/>
+  <rect x="55" y="32" width="20" height="4" fill="#8b0000" transform="rotate(-15, 65, 34)"/>
+
+  <!-- Mouth with teeth -->
+  <path d="M 30 70 Q 50 85 70 70" fill="#1a1a2e" stroke="#8b0000" stroke-width="2"/>
+  <polygon points="35,70 38,78 41,70" fill="white"/>
+  <polygon points="47,70 50,80 53,70" fill="white"/>
+  <polygon points="59,70 62,78 65,70" fill="white"/>
+
+  <!-- Arms -->
+  <ellipse cx="15" cy="60" rx="10" ry="15" fill="#e63946"/>
+  <ellipse cx="85" cy="60" rx="10" ry="15" fill="#e63946"/>
+</svg>

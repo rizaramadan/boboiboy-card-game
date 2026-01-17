@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Green Goblin Monster -->
+  <!-- Ears -->
+  <polygon points="10,40 0,20 25,35" fill="#2d6a4f"/>
+  <polygon points="90,40 100,20 75,35" fill="#2d6a4f"/>
+
+  <!-- Body -->
+  <ellipse cx="50" cy="55" rx="32" ry="38" fill="#40916c"/>
+  <ellipse cx="50" cy="55" rx="32" ry="38" fill="url(#greenGradient)"/>
+
+  <!-- Gradient for depth -->
+  <defs>
+    <radialGradient id="greenGradient" cx="30%" cy="30%">
+      <stop offset="0%" style="stop-color:#52b788"/>
+      <stop offset="100%" style="stop-color:#1b4332"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Eyes - big and mischievous -->
+  <ellipse cx="35" cy="42" rx="12" ry="14" fill="#d8f3dc"/>
+  <ellipse cx="65" cy="42" rx="12" ry="14" fill="#d8f3dc"/>
+  <ellipse cx="37" cy="44" r="6" fill="#1b4332"/>
+  <ellipse cx="67" cy="44" r="6" fill="#1b4332"/>
+  <circle cx="39" cy="42" r="2" fill="white"/>
+  <circle cx="69" cy="42" r="2" fill="white"/>
+
+  <!-- Nose - pointy -->
+  <polygon points="50,48 45,60 55,60" fill="#2d6a4f"/>
+
+  <!-- Grin -->
+  <path d="M 30 72 Q 50 82 70 72" fill="none" stroke="#1b4332" stroke-width="3" stroke-linecap="round"/>
+  <path d="M 32 72 Q 50 80 68 72" fill="#1b4332"/>
+
+  <!-- Warts -->
+  <circle cx="25" cy="55" r="4" fill="#2d6a4f"/>
+  <circle cx="72" cy="50" r="3" fill="#2d6a4f"/>
+  <circle cx="60" cy="75" r="3" fill="#2d6a4f"/>
+
+  <!-- Hands -->
+  <circle cx="18" cy="70" r="8" fill="#40916c"/>
+  <circle cx="82" cy="70" r="8" fill="#40916c"/>
+  <!-- Fingers -->
+  <circle cx="12" cy="65" r="3" fill="#40916c"/>
+  <circle cx="10" cy="72" r="3" fill="#40916c"/>
+  <circle cx="88" cy="65" r="3" fill="#40916c"/>
+  <circle cx="90" cy="72" r="3" fill="#40916c"/>
+</svg>
