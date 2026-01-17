@@ -29,6 +29,9 @@ export class GameScene extends Phaser.Scene {
   private currentSpeedMultiplier: number = 1;
   private backgroundStars: Phaser.GameObjects.Graphics[] = [];
   private meteors: Phaser.GameObjects.Image[] = [];
+  private isPaused: boolean = false;
+  private lastTapTime: number = 0;
+  private pauseOverlay!: Phaser.GameObjects.Container;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -41,6 +44,8 @@ export class GameScene extends Phaser.Scene {
     this.score = 0;
     this.gameOver = false;
     this.heroImageData = data.heroImage || null;
+    this.isPaused = false;
+    this.lastTapTime = 0;
   }
 
   create(): void {
@@ -381,27 +386,56 @@ export class GameScene extends Phaser.Scene {
   private setupInput(): void {
     // Touch/swipe input (left/right)
     let startX = 0;
+    let startTime = 0;
 
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       startX = pointer.x;
+      startTime = this.time.now;
+
+      // Check for double tap/click
+      const timeSinceLastTap = startTime - this.lastTapTime;
+      if (timeSinceLastTap < 300) {
+        // Double tap detected - toggle pause
+        this.togglePause();
+        this.lastTapTime = 0; // Reset to avoid triple-tap issues
+      } else {
+        this.lastTapTime = startTime;
+      }
     });
 
     this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      if (this.isPaused) return; // Don't process swipes when paused
+
       const deltaX = pointer.x - startX;
       const swipeThreshold = 50;
+      const deltaTime = this.time.now - startTime;
 
-      if (deltaX < -swipeThreshold) {
-        this.laneManager.moveLeft(this.hero);
-      } else if (deltaX > swipeThreshold) {
-        this.laneManager.moveRight(this.hero);
+      // Only process as swipe if it took long enough (not a quick tap)
+      if (deltaTime > 100) {
+        if (deltaX < -swipeThreshold) {
+          this.laneManager.moveLeft(this.hero);
+        } else if (deltaX > swipeThreshold) {
+          this.laneManager.moveRight(this.hero);
+        }
       }
     });
 
     // Keyboard input - Arrow keys and A/D
-    this.input.keyboard?.on('keydown-LEFT', () => this.laneManager.moveLeft(this.hero));
-    this.input.keyboard?.on('keydown-RIGHT', () => this.laneManager.moveRight(this.hero));
-    this.input.keyboard?.on('keydown-A', () => this.laneManager.moveLeft(this.hero));
-    this.input.keyboard?.on('keydown-D', () => this.laneManager.moveRight(this.hero));
+    this.input.keyboard?.on('keydown-LEFT', () => {
+      if (!this.isPaused) this.laneManager.moveLeft(this.hero);
+    });
+    this.input.keyboard?.on('keydown-RIGHT', () => {
+      if (!this.isPaused) this.laneManager.moveRight(this.hero);
+    });
+    this.input.keyboard?.on('keydown-A', () => {
+      if (!this.isPaused) this.laneManager.moveLeft(this.hero);
+    });
+    this.input.keyboard?.on('keydown-D', () => {
+      if (!this.isPaused) this.laneManager.moveRight(this.hero);
+    });
+
+    // ESC key to toggle pause
+    this.input.keyboard?.on('keydown-ESC', () => this.togglePause());
   }
 
   private spawnMonster(): void {
@@ -709,8 +743,153 @@ export class GameScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(201);
   }
 
+  private togglePause(): void {
+    if (this.gameOver) return; // Can't pause if game is over
+
+    if (this.isPaused) {
+      this.resumeGame();
+    } else {
+      this.pauseGame();
+    }
+  }
+
+  private pauseGame(): void {
+    this.isPaused = true;
+
+    // Pause physics
+    this.physics.pause();
+
+    // Pause all tweens
+    this.tweens.pauseAll();
+
+    // Pause timers
+    this.time.paused = true;
+
+    // Show pause overlay
+    this.createPauseOverlay();
+  }
+
+  private resumeGame(): void {
+    this.isPaused = false;
+
+    // Resume physics
+    this.physics.resume();
+
+    // Resume all tweens
+    this.tweens.resumeAll();
+
+    // Resume timers
+    this.time.paused = false;
+
+    // Hide pause overlay
+    if (this.pauseOverlay) {
+      this.pauseOverlay.destroy();
+    }
+  }
+
+  private createPauseOverlay(): void {
+    const { WIDTH, HEIGHT } = GAME_CONFIG;
+
+    // Create container for all pause elements
+    this.pauseOverlay = this.add.container(0, 0);
+    this.pauseOverlay.setDepth(300);
+
+    // Semi-transparent dark overlay
+    const overlay = this.add.rectangle(WIDTH / 2, HEIGHT / 2, WIDTH, HEIGHT, 0x0d0221, 0.9);
+    this.pauseOverlay.add(overlay);
+
+    // Add some decorative stars
+    const overlayStars = this.add.graphics();
+    for (let i = 0; i < 40; i++) {
+      const x = Phaser.Math.Between(50, WIDTH - 50);
+      const y = Phaser.Math.Between(100, HEIGHT - 100);
+      overlayStars.fillStyle(0xffffff, Phaser.Math.FloatBetween(0.3, 0.8));
+      overlayStars.fillCircle(x, y, Phaser.Math.FloatBetween(0.5, 2));
+    }
+    this.pauseOverlay.add(overlayStars);
+
+    // Pause title background
+    const titleBg = this.add.graphics();
+    titleBg.fillStyle(0x1a0533, 0.8);
+    titleBg.fillRoundedRect(WIDTH / 2 - 150, HEIGHT / 2 - 180, 300, 80, 15);
+    titleBg.lineStyle(3, 0x7c4dff, 0.8);
+    titleBg.strokeRoundedRect(WIDTH / 2 - 150, HEIGHT / 2 - 180, 300, 80, 15);
+    this.pauseOverlay.add(titleBg);
+
+    // Pause title
+    const pauseTitle = this.add.text(WIDTH / 2, HEIGHT / 2 - 140, '⏸ PAUSED', {
+      font: 'bold 52px Arial',
+      color: '#00e5ff',
+      stroke: '#7c4dff',
+      strokeThickness: 6,
+    }).setOrigin(0.5);
+    this.pauseOverlay.add(pauseTitle);
+
+    // Instructions background
+    const instructionsBg = this.add.graphics();
+    instructionsBg.fillStyle(0x1a0533, 0.7);
+    instructionsBg.fillRoundedRect(WIDTH / 2 - 160, HEIGHT / 2 - 60, 320, 200, 12);
+    instructionsBg.lineStyle(2, 0x7c4dff, 0.6);
+    instructionsBg.strokeRoundedRect(WIDTH / 2 - 160, HEIGHT / 2 - 60, 320, 200, 12);
+    this.pauseOverlay.add(instructionsBg);
+
+    // Instructions
+    const instructions = this.add.text(WIDTH / 2, HEIGHT / 2 - 20,
+      'To Resume:', {
+      font: 'bold 22px Arial',
+      color: '#b388ff',
+    }).setOrigin(0.5);
+    this.pauseOverlay.add(instructions);
+
+    const doubleTapText = this.add.text(WIDTH / 2, HEIGHT / 2 + 20,
+      '• Double Tap/Click', {
+      font: '20px Arial',
+      color: '#ffffff',
+    }).setOrigin(0.5);
+    this.pauseOverlay.add(doubleTapText);
+
+    const escText = this.add.text(WIDTH / 2, HEIGHT / 2 + 50,
+      '• Press ESC', {
+      font: '20px Arial',
+      color: '#ffffff',
+    }).setOrigin(0.5);
+    this.pauseOverlay.add(escText);
+
+    const buttonText = this.add.text(WIDTH / 2, HEIGHT / 2 + 80,
+      '• Tap Resume Button', {
+      font: '20px Arial',
+      color: '#ffffff',
+    }).setOrigin(0.5);
+    this.pauseOverlay.add(buttonText);
+
+    // Resume button
+    const resumeButton = this.add.image(WIDTH / 2, HEIGHT / 2 + 160, 'button')
+      .setInteractive({ useHandCursor: true })
+      .on('pointerdown', () => this.resumeGame())
+      .on('pointerover', () => resumeButton.setTint(0x7c4dff))
+      .on('pointerout', () => resumeButton.clearTint());
+    this.pauseOverlay.add(resumeButton);
+
+    const resumeText = this.add.text(WIDTH / 2, HEIGHT / 2 + 160, '▶ RESUME', {
+      font: 'bold 28px Arial',
+      color: '#ffffff',
+    }).setOrigin(0.5);
+    this.pauseOverlay.add(resumeText);
+
+    // Add subtle pulse animation to the title
+    this.tweens.add({
+      targets: pauseTitle,
+      scale: 1.1,
+      duration: 800,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+      paused: false, // This tween should play even when game is paused
+    });
+  }
+
   update(): void {
-    if (this.gameOver) return;
+    if (this.gameOver || this.isPaused) return;
 
     // Wait for hero to be initialized (async image loading)
     if (!this.hero) return;
