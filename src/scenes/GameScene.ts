@@ -53,7 +53,7 @@ export class GameScene extends Phaser.Scene {
       if (this.textures.exists('scanned_hero')) {
         this.textures.remove('scanned_hero');
       }
-      
+
       const img = new Image();
       img.onload = () => {
         this.textures.addImage('scanned_hero', img);
@@ -76,10 +76,10 @@ export class GameScene extends Phaser.Scene {
 
     // Create hero at bottom center lane
     const startX = GAME_CONFIG.LANES.X_POSITIONS[1]; // Middle lane
-    
+
     // Use the texture, fallback to placeholder if scanned_hero failed
     const textureToUse = this.textures.exists(heroTexture) ? heroTexture : 'hero_placeholder';
-    
+
     this.hero = new Hero(this, startX, GAME_CONFIG.HERO.Y_POSITION, textureToUse);
     this.hero.setAttack(this.heroAttack);
 
@@ -365,6 +365,9 @@ export class GameScene extends Phaser.Scene {
 
   update(): void {
     if (this.gameOver) return;
+
+    // Wait for hero to be initialized (async image loading)
+    if (!this.hero) return;
 
     // Update hero animation
     this.hero.update();

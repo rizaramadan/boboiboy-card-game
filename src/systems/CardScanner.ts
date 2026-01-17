@@ -6,14 +6,24 @@ export interface ScanResult {
   characterImage: string | null;
 }
 
+interface StoredCardData extends ScanResult {
+  timestamp: number;
+}
+
+export type ProgressCallback = (status: string) => void;
+
+const STORAGE_KEY = 'boboiboy_scanned_card';
+const OCR_TIMEOUT_MS = 10000; // 10 second timeout
+
 export class CardScanner {
   private worker: Tesseract.Worker | null = null;
 
-  async initialize(): Promise<void> {
+  async initialize(onProgress?: ProgressCallback): Promise<void> {
+    onProgress?.('Initializing OCR engine...');
     this.worker = await Tesseract.createWorker('eng');
   }
 
-  async scanCard(imageData: string | null): Promise<ScanResult> {
+  async scanCard(imageData: string | null, onProgress?: ProgressCallback): Promise<ScanResult> {
     // If no image provided, return demo values
     if (!imageData) {
       return this.getDemoValues();
@@ -22,12 +32,19 @@ export class CardScanner {
     try {
       // Initialize worker if needed
       if (!this.worker) {
-        await this.initialize();
+        await this.initialize(onProgress);
       }
 
-      // Perform OCR
-      const result = await this.worker!.recognize(imageData);
+      onProgress?.('Analyzing card...');
+
+      // Resize image for faster OCR processing
+      const resizedImage = await this.resizeImage(imageData, 800);
+
+      // Perform OCR with timeout protection
+      const result = await this.recognizeWithTimeout(resizedImage, OCR_TIMEOUT_MS);
       const text = result.data.text;
+
+      onProgress?.('Extracting stats...');
 
       // Extract numbers from the card
       const numbers = this.extractNumbers(text);
@@ -36,17 +53,72 @@ export class CardScanner {
       const { attack, health } = this.parseCardStats(text, numbers);
 
       // Extract character image (simplified - returns the whole image for now)
+      onProgress?.('Processing character image...');
       const characterImage = await this.extractCharacter(imageData);
 
-      return {
+      const scanResult: ScanResult = {
         attack,
         health,
         characterImage,
       };
+
+      // Save to localStorage
+      this.saveToLocalStorage(scanResult);
+
+      return scanResult;
     } catch (error) {
       console.error('Card scanning failed:', error);
+      onProgress?.('Scan failed, using default values...');
       return this.getDemoValues();
     }
+  }
+
+  private async recognizeWithTimeout(
+    imageData: string,
+    timeoutMs: number
+  ): Promise<Tesseract.RecognizeResult> {
+    return new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        reject(new Error('OCR timeout'));
+      }, timeoutMs);
+
+      this.worker!.recognize(imageData)
+        .then((result) => {
+          clearTimeout(timeoutId);
+          resolve(result);
+        })
+        .catch((error) => {
+          clearTimeout(timeoutId);
+          reject(error);
+        });
+    });
+  }
+
+  private async resizeImage(imageData: string, maxWidth: number): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8));
+      };
+      img.onerror = () => {
+        // Return original on error
+        resolve(imageData);
+      };
+      img.src = imageData;
+    });
   }
 
   private extractNumbers(text: string): number[] {
@@ -90,17 +162,43 @@ export class CardScanner {
   }
 
   private async extractCharacter(imageData: string): Promise<string | null> {
-    // For now, return the original image
+    // Resize the image to 100x100 for hero display
     // A more sophisticated implementation would:
     // 1. Detect the card borders
     // 2. Find the character artwork area
     // 3. Use background removal or edge detection
     // 4. Return just the character portion
 
-    // TODO: Implement proper character extraction using Canvas API
-    // or a background removal library
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const targetSize = 100;
+        canvas.width = targetSize;
+        canvas.height = targetSize;
+        const ctx = canvas.getContext('2d');
 
-    return imageData;
+        if (ctx) {
+          // Calculate crop to get center square from the image
+          const minDim = Math.min(img.width, img.height);
+          const cropX = (img.width - minDim) / 2;
+          const cropY = (img.height - minDim) / 2;
+
+          // Draw center-cropped and scaled image
+          ctx.drawImage(
+            img,
+            cropX, cropY, minDim, minDim,  // Source crop (center square)
+            0, 0, targetSize, targetSize    // Destination (100x100)
+          );
+        }
+
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => {
+        resolve(imageData); // Return original on error
+      };
+      img.src = imageData;
+    });
   }
 
   private getDemoValues(): ScanResult {
@@ -110,6 +208,52 @@ export class CardScanner {
       health: 80 + Math.floor(Math.random() * 40), // 80-120
       characterImage: null,
     };
+  }
+
+  // localStorage persistence methods
+  saveToLocalStorage(result: ScanResult): void {
+    const data: StoredCardData = {
+      ...result,
+      timestamp: Date.now(),
+    };
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      console.log('Card data saved to localStorage');
+    } catch (error) {
+      console.error('Failed to save card data:', error);
+    }
+  }
+
+  loadFromLocalStorage(): ScanResult | null {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return null;
+
+      const data: StoredCardData = JSON.parse(stored);
+      console.log('Loaded card data from localStorage:', data);
+
+      return {
+        attack: data.attack,
+        health: data.health,
+        characterImage: data.characterImage,
+      };
+    } catch (error) {
+      console.error('Failed to load card data:', error);
+      return null;
+    }
+  }
+
+  clearLocalStorage(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      console.log('Card data cleared from localStorage');
+    } catch (error) {
+      console.error('Failed to clear card data:', error);
+    }
+  }
+
+  hasSavedCard(): boolean {
+    return localStorage.getItem(STORAGE_KEY) !== null;
   }
 
   async terminate(): Promise<void> {

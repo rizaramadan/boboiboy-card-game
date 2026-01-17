@@ -8,6 +8,9 @@ export class CameraScene extends Phaser.Scene {
   private statusText!: Phaser.GameObjects.Text;
   private captureButton!: Phaser.GameObjects.Image;
   private previewImage: Phaser.GameObjects.Image | null = null;
+  private useSavedButton: Phaser.GameObjects.Image | null = null;
+  private useSavedText: Phaser.GameObjects.Text | null = null;
+  private isProcessing: boolean = false;
 
   constructor() {
     super({ key: 'CameraScene' });
@@ -17,6 +20,7 @@ export class CameraScene extends Phaser.Scene {
     const { WIDTH } = GAME_CONFIG;
 
     this.cardScanner = new CardScanner();
+    this.isProcessing = false;
 
     // Title
     this.add.text(WIDTH / 2, 80, 'SCAN YOUR CARD', {
@@ -67,6 +71,22 @@ export class CameraScene extends Phaser.Scene {
       font: 'bold 32px Arial',
       color: '#ffffff',
     }).setOrigin(0.5);
+
+    // Check for saved card and show "Use Saved Card" button
+    if (this.cardScanner.hasSavedCard()) {
+      const savedData = this.cardScanner.loadFromLocalStorage();
+      if (savedData) {
+        this.useSavedButton = this.add.image(WIDTH / 2, 950, 'button')
+          .setInteractive({ useHandCursor: true })
+          .on('pointerdown', () => this.useSavedCard())
+          .setTint(0x44aa44);
+
+        this.useSavedText = this.add.text(WIDTH / 2, 950, `USE SAVED (ATK:${savedData.attack} HP:${savedData.health})`, {
+          font: 'bold 20px Arial',
+          color: '#ffffff',
+        }).setOrigin(0.5);
+      }
+    }
 
     // Back button
     this.add.text(60, 1200, '< BACK', {
@@ -138,6 +158,18 @@ export class CameraScene extends Phaser.Scene {
   }
 
   private async captureCard(): Promise<void> {
+    // Prevent multiple captures
+    if (this.isProcessing) return;
+    this.isProcessing = true;
+
+    // Disable buttons during processing
+    this.captureButton.setAlpha(0.5);
+    this.captureButton.disableInteractive();
+    if (this.useSavedButton) {
+      this.useSavedButton.setAlpha(0.5);
+      this.useSavedButton.disableInteractive();
+    }
+
     this.statusText.setText('Processing card...');
 
     try {
@@ -153,8 +185,10 @@ export class CameraScene extends Phaser.Scene {
         imageData = canvas.toDataURL('image/png');
       }
 
-      // Scan the card
-      const result = await this.cardScanner!.scanCard(imageData);
+      // Scan the card with progress callback
+      const result = await this.cardScanner!.scanCard(imageData, (status) => {
+        this.statusText.setText(status);
+      });
 
       this.statusText.setText(
         `Found: Attack ${result.attack}, Health ${result.health}\nStarting game...`
@@ -174,12 +208,39 @@ export class CameraScene extends Phaser.Scene {
     } catch (error) {
       console.error('Scan error:', error);
       this.statusText.setText('Scan failed. Using default values.');
+      this.isProcessing = false;
+
+      // Re-enable buttons
+      this.captureButton.setAlpha(1);
+      this.captureButton.setInteractive({ useHandCursor: true });
+      if (this.useSavedButton) {
+        this.useSavedButton.setAlpha(1);
+        this.useSavedButton.setInteractive({ useHandCursor: true });
+      }
 
       this.time.delayedCall(1500, () => {
         this.scene.start('GameScene', {
           heroImage: null,
           attack: GAME_CONFIG.HERO.DEFAULT_ATTACK,
           health: GAME_CONFIG.HERO.DEFAULT_HEALTH,
+        });
+      });
+    }
+  }
+
+  private useSavedCard(): void {
+    if (this.isProcessing) return;
+
+    const savedData = this.cardScanner?.loadFromLocalStorage();
+    if (savedData) {
+      this.statusText.setText(`Using saved card: Attack ${savedData.attack}, Health ${savedData.health}`);
+      this.stopCamera();
+
+      this.time.delayedCall(500, () => {
+        this.scene.start('GameScene', {
+          heroImage: savedData.characterImage,
+          attack: savedData.attack,
+          health: savedData.health,
         });
       });
     }
