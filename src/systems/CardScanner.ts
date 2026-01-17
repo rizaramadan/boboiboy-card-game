@@ -20,17 +20,25 @@ const OPENROUTER_TIMEOUT_MS = 30000; // 30 second timeout for image generation
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const OPENROUTER_MODEL = 'google/gemini-2.5-flash-image';
 
-const CHARACTER_EXTRACTION_PROMPT = `Analyze the attached photo of the card. I need a clean, flat vector asset of just the character for a game icon.
+const CHARACTER_EXTRACTION_PROMPT = `Analyze the attached photo of the card. I have two specific tasks for you:
 
-Task: Create a 1:1 aspect ratio image (suitable for 100x100px) of the character based on the visual design in the card. Style: Flat 2D vector art, minimalist, clean lines, no gradients, no shading. Constraints:
+Task 1: Data Extraction (JSON) Look at the top right of the card and extract the numeric values associated with the icons:
 
-Isolate the character completely (remove the card background, text, numbers, and the hand/fingers).
+Health: The number next to the Heart icon.
 
-Ensure the character is fully visible and centered.
+Attack: The number next to the Sword icon.
 
-Output on a solid white background (or transparent if supported).
+Name: The character name text.
 
-The design must be simple enough to remain legible when resized to 100x100 pixels`;
+Task 2: Visual Asset Generation Create a clean, flat vector-style image of the character isolated from the card.
+
+Dimensions: 1:1 aspect ratio (suitable for 100x100px).
+
+Style: Flat 2D vector art, minimalist, clean lines, no gradients, no shading.
+
+Constraints: Remove the card background, text, numbers, and any visual noise (like the hand holding the card). Keep the character centered and fully visible on a solid white background.
+
+Final Output: Provide the JSON object for Task 1 and the generated image for Task 2.`;
 
 export class CardScanner {
   private worker: Tesseract.Worker | null = null;
@@ -252,8 +260,11 @@ export class CardScanner {
       const generatedImage = this.extractImageFromResponse(data);
 
       if (generatedImage) {
+        onProgress?.('Resizing character icon...');
+        // Resize the AI-generated image to 100x100
+        const resizedImage = await this.resizeToIcon(generatedImage, 200);
         onProgress?.('AI character generated successfully!');
-        return generatedImage;
+        return resizedImage;
       }
 
       // Fallback to simple extraction if no image in response
@@ -398,6 +409,42 @@ export class CardScanner {
             cropX, cropY, minDim, minDim,  // Source crop (center square)
             0, 0, targetSize, targetSize    // Destination (100x100)
           );
+        }
+
+        resolve(canvas.toDataURL('image/png'));
+      };
+      img.onerror = () => {
+        resolve(imageData); // Return original on error
+      };
+      img.src = imageData;
+    });
+  }
+
+  private async resizeToIcon(imageData: string, size: number): Promise<string> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        if (ctx) {
+          // Use better quality scaling
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+
+          // Scale the image to fit within the target size while maintaining aspect ratio
+          const scale = Math.min(size / img.width, size / img.height);
+          const scaledWidth = img.width * scale;
+          const scaledHeight = img.height * scale;
+
+          // Center the image
+          const offsetX = (size - scaledWidth) / 2;
+          const offsetY = (size - scaledHeight) / 2;
+
+          // Draw scaled and centered image
+          ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
         }
 
         resolve(canvas.toDataURL('image/png'));
