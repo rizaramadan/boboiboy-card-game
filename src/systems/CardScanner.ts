@@ -4,6 +4,18 @@ export interface ScanResult {
   attack: number;
   health: number;
   characterImage: string | null;
+  name?: string;
+}
+
+interface AIExtractedData {
+  health?: number;
+  attack?: number;
+  name?: string;
+}
+
+interface AIExtractionResult {
+  stats: AIExtractedData | null;
+  image: string | null;
 }
 
 interface StoredCardData extends ScanResult {
@@ -14,7 +26,6 @@ export type ProgressCallback = (status: string) => void;
 
 const STORAGE_KEY = 'boboiboy_scanned_card';
 const OCR_TIMEOUT_MS = 10000; // 10 second timeout
-const OPENROUTER_TIMEOUT_MS = 30000; // 30 second timeout for image generation
 
 // OpenRouter API configuration
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
@@ -32,9 +43,9 @@ Name: The character name text.
 
 Task 2: Visual Asset Generation Create a clean, flat vector-style image of the character isolated from the card.
 
-Dimensions: 1:1 aspect ratio (suitable for 100x100px).
+Dimensions: 1:1 aspect ratio (suitable for 200x200px).
 
-Style: Flat 2D vector art, minimalist, clean lines, no gradients, no shading.
+Style: Flat 2D vector art, minimalist, clean lines, no gradients, no shading, transparent.
 
 Constraints: Remove the card background, text, numbers, and any visual noise (like the hand holding the card). Keep the character centered and fully visible on a solid white background.
 
@@ -73,31 +84,47 @@ export class CardScanner {
     }
 
     try {
-      // Initialize worker if needed
-      if (!this.worker) {
-        await this.initialize(onProgress);
+      // Try AI extraction first (gets both stats and image)
+      const apiKey = this.getApiKey();
+      
+      if (apiKey) {
+        onProgress?.('Analyzing card with AI...');
+        const aiResult = await this.extractWithAI(imageData, onProgress);
+        
+        if (aiResult.stats || aiResult.image) {
+          // Use AI-extracted stats if available, otherwise fall back to OCR
+          let attack = aiResult.stats?.attack ?? 0;
+          let health = aiResult.stats?.health ?? 0;
+          const name = aiResult.stats?.name;
+          
+          // If AI didn't extract stats, fall back to OCR
+          if (!attack || !health) {
+            onProgress?.('Extracting stats with OCR...');
+            const ocrStats = await this.extractStatsWithOCR(imageData, onProgress);
+            attack = attack || ocrStats.attack;
+            health = health || ocrStats.health;
+          }
+          
+          // Clamp values to reasonable ranges
+          attack = Math.max(10, Math.min(200, attack));
+          health = Math.max(20, Math.min(500, health));
+          
+          const scanResult: ScanResult = {
+            attack,
+            health,
+            characterImage: aiResult.image,
+            name,
+          };
+          
+          this.saveToLocalStorage(scanResult);
+          return scanResult;
+        }
       }
-
-      onProgress?.('Analyzing card...');
-
-      // Resize image for faster OCR processing
-      const resizedImage = await this.resizeImage(imageData, 800);
-
-      // Perform OCR with timeout protection
-      const result = await this.recognizeWithTimeout(resizedImage, OCR_TIMEOUT_MS);
-      const text = result.data.text;
-
-      onProgress?.('Extracting stats...');
-
-      // Extract numbers from the card
-      const numbers = this.extractNumbers(text);
-
-      // Try to identify attack and health values
-      const { attack, health } = this.parseCardStats(text, numbers);
-
-      // Extract character image using OpenRouter AI
-      onProgress?.('Generating character icon with AI...');
-      const characterImage = await this.extractCharacterWithAI(imageData, onProgress);
+      
+      // Fallback: Use OCR for stats and simple extraction for image
+      onProgress?.('Using OCR fallback...');
+      const { attack, health } = await this.extractStatsWithOCR(imageData, onProgress);
+      const characterImage = await this.extractCharacterSimple(imageData);
 
       const scanResult: ScanResult = {
         attack,
@@ -204,17 +231,41 @@ export class CardScanner {
     return { attack, health };
   }
 
-  private async extractCharacterWithAI(imageData: string, onProgress?: ProgressCallback): Promise<string | null> {
+  private async extractStatsWithOCR(imageData: string, onProgress?: ProgressCallback): Promise<{ attack: number; health: number }> {
+    try {
+      // Initialize worker if needed
+      if (!this.worker) {
+        await this.initialize(onProgress);
+      }
+
+      // Resize image for faster OCR processing
+      const resizedImage = await this.resizeImage(imageData, 800);
+
+      // Perform OCR with timeout protection
+      const result = await this.recognizeWithTimeout(resizedImage, OCR_TIMEOUT_MS);
+      const text = result.data.text;
+
+      // Extract numbers from the card
+      const numbers = this.extractNumbers(text);
+
+      // Try to identify attack and health values
+      return this.parseCardStats(text, numbers);
+    } catch (error) {
+      console.error('OCR extraction failed:', error);
+      return { attack: 45, health: 100 }; // Default values
+    }
+  }
+
+  private async extractWithAI(imageData: string, onProgress?: ProgressCallback): Promise<AIExtractionResult> {
     const apiKey = this.getApiKey();
 
     if (!apiKey) {
-      console.warn('No OpenRouter API key set, falling back to simple extraction');
-      onProgress?.('No API key, using simple crop...');
-      return this.extractCharacterSimple(imageData);
+      console.warn('No OpenRouter API key set');
+      return { stats: null, image: null };
     }
 
     try {
-      onProgress?.('Sending to AI for character extraction...');
+      onProgress?.('Sending to AI for analysis...');
 
       const response = await fetch(OPENROUTER_API_URL, {
         method: 'POST',
@@ -255,28 +306,87 @@ export class CardScanner {
       const data = await response.json();
       console.log('OpenRouter response:', data);
 
-      // Extract the generated image from the response
-      // The response format may contain base64 image data
-      const generatedImage = this.extractImageFromResponse(data);
-
-      if (generatedImage) {
-        onProgress?.('Resizing character icon...');
-        // Resize the AI-generated image to 100x100
-        const resizedImage = await this.resizeToIcon(generatedImage, 200);
-        onProgress?.('AI character generated successfully!');
-        return resizedImage;
+      // Extract stats from content (JSON in text)
+      const stats = this.extractStatsFromResponse(data);
+      if (stats) {
+        console.log('AI extracted stats:', stats);
+        onProgress?.('AI extracted stats successfully!');
       }
 
-      // Fallback to simple extraction if no image in response
-      console.warn('No image in API response, falling back to simple extraction');
-      onProgress?.('AI response had no image, using fallback...');
-      return this.extractCharacterSimple(imageData);
+      // Extract the generated image from the response
+      let image = this.extractImageFromResponse(data);
+
+      if (image) {
+        onProgress?.('Resizing character icon...');
+        // Resize the AI-generated image to 200x200
+        image = await this.resizeToIcon(image, 200);
+        onProgress?.('AI character generated successfully!');
+      }
+
+      return { stats, image };
 
     } catch (error) {
       console.error('AI extraction failed:', error);
-      onProgress?.('AI extraction failed, using fallback...');
-      return this.extractCharacterSimple(imageData);
+      onProgress?.('AI extraction failed...');
+      return { stats: null, image: null };
     }
+  }
+
+  private extractStatsFromResponse(data: any): AIExtractedData | null {
+    try {
+      const choices = data.choices || [];
+
+      for (const choice of choices) {
+        const message = choice.message;
+        if (!message) continue;
+
+        const content = message.content;
+
+        if (typeof content === 'string') {
+          // Try to find JSON in the content
+          // Look for JSON object pattern
+          const jsonMatch = content.match(/\{[\s\S]*?"(?:health|attack|name)"[\s\S]*?\}/i);
+          if (jsonMatch) {
+            try {
+              const parsed = JSON.parse(jsonMatch[0]);
+              const stats: AIExtractedData = {};
+              
+              // Extract health (case-insensitive)
+              if (parsed.health !== undefined) stats.health = Number(parsed.health);
+              if (parsed.Health !== undefined) stats.health = Number(parsed.Health);
+              
+              // Extract attack (case-insensitive)
+              if (parsed.attack !== undefined) stats.attack = Number(parsed.attack);
+              if (parsed.Attack !== undefined) stats.attack = Number(parsed.Attack);
+              
+              // Extract name (case-insensitive)
+              if (parsed.name !== undefined) stats.name = String(parsed.name);
+              if (parsed.Name !== undefined) stats.name = String(parsed.Name);
+              
+              return stats;
+            } catch (e) {
+              console.warn('Failed to parse JSON from content:', e);
+            }
+          }
+
+          // Try alternative patterns like "Health: 100" or "Attack: 50"
+          const healthMatch = content.match(/health[:\s]*(\d+)/i);
+          const attackMatch = content.match(/attack[:\s]*(\d+)/i);
+          const nameMatch = content.match(/name[:\s]*["']?([^"'\n,}]+)["']?/i);
+
+          if (healthMatch || attackMatch) {
+            const stats: AIExtractedData = {};
+            if (healthMatch) stats.health = Number(healthMatch[1]);
+            if (attackMatch) stats.attack = Number(attackMatch[1]);
+            if (nameMatch) stats.name = nameMatch[1].trim();
+            return stats;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error extracting stats from response:', error);
+    }
+    return null;
   }
 
   private extractImageFromResponse(data: any): string | null {
