@@ -1,0 +1,51 @@
+
+<svg width="96" height="96" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d2d44;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d5f9e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="96" height="96" rx="19.200000000000003" fill="url(#bgGradient)"/>
+
+  <!-- Card shape -->
+  <rect x="19.200000000000003" y="14.399999999999999"
+        width="57.599999999999994" height="67.19999999999999"
+        rx="4.800000000000001"
+        fill="url(#cardGradient)"
+        stroke="#fff"
+        stroke-width="1.92"/>
+
+  <!-- Heart icon (health) -->
+  <path d="M 33.599999999999994 28.799999999999997
+           C 33.599999999999994 24, 28.799999999999997 21.12, 25.92 24
+           C 23.04 26.880000000000003, 23.04 30.72, 25.92 33.599999999999994
+           L 33.599999999999994 40.32
+           L 41.28 33.599999999999994
+           C 44.160000000000004 30.72, 44.160000000000004 26.880000000000003, 41.28 24
+           C 38.400000000000006 21.12, 33.599999999999994 24, 33.599999999999994 28.799999999999997 Z"
+        fill="#ff6b6b"/>
+
+  <!-- Sword icon (attack) -->
+  <g transform="rotate(-45 62.400000000000006 38.400000000000006)">
+    <rect x="60.480000000000004" y="28.799999999999997"
+          width="3.84" height="14.399999999999999"
+          fill="#ffd93d"/>
+    <polygon points="62.400000000000006,26.880000000000003 59.519999999999996,30.72 65.28,30.72"
+             fill="#ffed4e"/>
+  </g>
+
+  <!-- Game title text -->
+  <text x="48" y="62.400000000000006"
+        font-family="Arial, sans-serif"
+        font-size="7.68"
+        font-weight="bold"
+        fill="#fff"
+        text-anchor="middle">BB</text>
+</svg>

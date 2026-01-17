@@ -4,10 +4,11 @@
   "description": "Mobile browser runner game with card scanning",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/generate-manifest.js && vite",
-    "build": "node scripts/generate-manifest.js && tsc && vite build",
+    "dev": "node scripts/generate-manifest.js && node scripts/generate-icons.js && vite",
+    "build": "node scripts/generate-manifest.js && node scripts/generate-icons.js && tsc && vite build",
     "preview": "vite preview",
-    "manifest": "node scripts/generate-manifest.js"
+    "manifest": "node scripts/generate-manifest.js",
+    "icons": "node scripts/generate-icons.js"
   },
   "dependencies": {
     "phaser": "^3.80.1",

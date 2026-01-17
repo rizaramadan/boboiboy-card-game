@@ -74,7 +74,12 @@ export class CardScanner {
 
   async initialize(onProgress?: ProgressCallback): Promise<void> {
     onProgress?.('Initializing OCR engine...');
-    this.worker = await Tesseract.createWorker('eng');
+    // Configure Tesseract to use CDN URLs that are cached by service worker
+    this.worker = await Tesseract.createWorker('eng', 1, {
+      workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5.0.5/dist/worker.min.js',
+      langPath: 'https://tessdata.projectnaptha.com/4.0.0',
+      corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5.0.0',
+    });
   }
 
   async scanCard(imageData: string | null, onProgress?: ProgressCallback): Promise<ScanResult> {

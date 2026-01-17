@@ -27,7 +27,21 @@ npm install        # Install dependencies
 npm run dev        # Start development server (http://localhost:3000)
 npm run build      # Production build
 npm run preview    # Preview production build
+npm run icons      # Generate PWA app icons
+npm run manifest   # Generate asset manifest
 ```
+
+## PWA Features
+
+**The game is now a Progressive Web App (PWA)!**
+
+- **Installable**: Add to Android home screen like a native app
+- **Offline Support**: Play completely offline after first load
+- **Service Worker**: Caches all game assets and Tesseract.js files
+- **App Icons**: SVG icons for all device sizes (72px - 512px)
+- **Standalone Mode**: Launches without browser UI
+
+See [PWA-GUIDE.md](./PWA-GUIDE.md) for detailed installation and usage instructions.
 
 ## Architecture
 
