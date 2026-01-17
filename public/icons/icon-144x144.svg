@@ -1,0 +1,51 @@
+
+<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d2d44;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90e2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2d5f9e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="144" height="144" rx="28.8" fill="url(#bgGradient)"/>
+
+  <!-- Card shape -->
+  <rect x="28.8" y="21.599999999999998"
+        width="86.39999999999999" height="100.8"
+        rx="7.2"
+        fill="url(#cardGradient)"
+        stroke="#fff"
+        stroke-width="2.88"/>
+
+  <!-- Heart icon (health) -->
+  <path d="M 50.4 43.199999999999996
+           C 50.4 36, 43.199999999999996 31.68, 38.88 36
+           C 34.56 40.32000000000001, 34.56 46.08, 38.88 50.4
+           L 50.4 60.48
+           L 61.92 50.4
+           C 66.24000000000001 46.08, 66.24000000000001 40.32000000000001, 61.92 36
+           C 57.6 31.68, 50.4 36, 50.4 43.199999999999996 Z"
+        fill="#ff6b6b"/>
+
+  <!-- Sword icon (attack) -->
+  <g transform="rotate(-45 93.60000000000001 57.6)">
+    <rect x="90.72" y="43.199999999999996"
+          width="5.76" height="21.599999999999998"
+          fill="#ffd93d"/>
+    <polygon points="93.60000000000001,40.32000000000001 89.28,46.08 97.92,46.08"
+             fill="#ffed4e"/>
+  </g>
+
+  <!-- Game title text -->
+  <text x="72" y="93.60000000000001"
+        font-family="Arial, sans-serif"
+        font-size="11.52"
+        font-weight="bold"
+        fill="#fff"
+        text-anchor="middle">BB</text>
+</svg>
