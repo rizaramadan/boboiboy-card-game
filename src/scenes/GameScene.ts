@@ -174,8 +174,8 @@ export class GameScene extends Phaser.Scene {
     );
     const health = Phaser.Math.Between(minHealth, maxHealth);
 
-    const monsterTypes = ['monster_red', 'monster_green', 'monster_blue'];
-    const monsterType = monsterTypes[Phaser.Math.Between(0, 2)];
+    const monsterTypes = this.registry.get('monsterTypes') as string[] || ['monster_red', 'monster_green', 'monster_blue'];
+    const monsterType = monsterTypes[Phaser.Math.Between(0, monsterTypes.length - 1)];
 
     const monster = new Monster(
       this,

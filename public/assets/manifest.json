@@ -1,0 +1,40 @@
+{
+  "heroes": [
+    {
+      "key": "hero_placeholder",
+      "file": "hero_placeholder.svg"
+    }
+  ],
+  "monsters": [
+    {
+      "key": "monster_blackdragon",
+      "file": "monster_blackdragon.png"
+    },
+    {
+      "key": "monster_blue",
+      "file": "monster_blue.svg"
+    },
+    {
+      "key": "monster_green",
+      "file": "monster_green.svg"
+    },
+    {
+      "key": "monster_red",
+      "file": "monster_red.svg"
+    }
+  ],
+  "ui": [
+    {
+      "key": "button",
+      "file": "button.svg"
+    },
+    {
+      "key": "heart",
+      "file": "heart.svg"
+    },
+    {
+      "key": "smash_effect",
+      "file": "smash_effect.svg"
+    }
+  ]
+}

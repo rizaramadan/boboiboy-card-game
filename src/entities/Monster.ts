@@ -21,13 +21,21 @@ export class Monster extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    this.setScale(1);
+    // Calculate scale based on desired display size (100x100 target)
+    const targetSize = 100;
+    const originalWidth = this.width;
+    const originalHeight = this.height;
+    const scale = targetSize / Math.max(originalWidth, originalHeight);
+    
+    this.setScale(scale);
     this.setDepth(5);
 
-    // Set up physics body
+    // Set up physics body - use proportional size based on scaled dimensions
     const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(80, 80);
-    body.setOffset(10, 10);
+    const bodyWidth = originalWidth * scale * 0.8;
+    const bodyHeight = originalHeight * scale * 0.8;
+    body.setSize(bodyWidth, bodyHeight);
+    body.setOffset((originalWidth - bodyWidth) / 2, (originalHeight - bodyHeight) / 2);
     body.setVelocityY(GAME_CONFIG.MONSTER.SPEED);
 
     // Create health label above monster
