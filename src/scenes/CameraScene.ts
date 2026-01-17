@@ -9,7 +9,6 @@ export class CameraScene extends Phaser.Scene {
   private captureButton!: Phaser.GameObjects.Image;
   private previewImage: Phaser.GameObjects.Image | null = null;
   private useSavedButton: Phaser.GameObjects.Image | null = null;
-  private useSavedText: Phaser.GameObjects.Text | null = null;
   private apiKeyInput: HTMLInputElement | null = null;
   private isProcessing: boolean = false;
 
@@ -90,9 +89,10 @@ export class CameraScene extends Phaser.Scene {
           .on('pointerdown', () => this.useSavedCard())
           .setTint(0x44aa44);
 
-        this.useSavedText = this.add.text(WIDTH / 2, 870, `USE SAVED (ATK:${savedData.attack} HP:${savedData.health})`, {
-          font: 'bold 20px Arial',
+        this.add.text(WIDTH / 2, 870, `USE SAVED (ATK:${savedData.attack} HP:${savedData.health})`, {
+          fontSize: '28px',
           color: '#ffffff',
+          fontStyle: 'bold'
         }).setOrigin(0.5);
       }
     }

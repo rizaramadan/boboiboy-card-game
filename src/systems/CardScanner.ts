@@ -284,6 +284,24 @@ export class CardScanner {
         }
 
         console.log('Message structure:', JSON.stringify(message, null, 2));
+
+        // Check for images array in message (Gemini/OpenRouter format)
+        // Format: message.images[].image_url.url
+        if (message.images && Array.isArray(message.images)) {
+          console.log('Found images array with', message.images.length, 'images');
+          for (const img of message.images) {
+            if (img.type === 'image_url' && img.image_url?.url) {
+              console.log('Found image_url in images array');
+              return img.image_url.url;
+            }
+            // Direct URL in image object
+            if (img.url && img.url.startsWith('data:image')) {
+              console.log('Found direct url in images array');
+              return img.url;
+            }
+          }
+        }
+
         const content = message.content;
 
         // If content is a string, check if it's a base64 image
