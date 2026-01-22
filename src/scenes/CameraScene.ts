@@ -152,6 +152,16 @@ export class CameraScene extends Phaser.Scene {
 
   private async initCamera(): Promise<void> {
     try {
+      // Check if running in a secure context (HTTPS or localhost)
+      if (!window.isSecureContext) {
+        throw new Error('Camera requires HTTPS or localhost');
+      }
+
+      // Check if mediaDevices API is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API not supported in this browser');
+      }
+
       this.videoElement = document.createElement('video');
       this.videoElement.setAttribute('playsinline', 'true');
       this.videoElement.style.display = 'none';
