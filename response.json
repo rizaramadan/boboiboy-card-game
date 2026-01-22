@@ -1,0 +1,52 @@
+{
+    "id": "gen-1768619337-aMtIJ6Hnswv1FseAiyqx",
+    "provider": "Google",
+    "model": "google/gemini-2.5-flash-image",
+    "object": "chat.completion",
+    "created": 1768619337,
+    "choices": [
+        {
+            "logprobs": null,
+            "finish_reason": "stop",
+            "native_finish_reason": "STOP",
+            "index": 0,
+            "message": {
+                "role": "assistant",
+                "content": "Here's the data extraction and the generated image:\n\n```json\n{\n  \"Name\": \"BOBOIBOY BLAZE\",\n  \"Health\": 140,\n  \"Attack\": 100\n}\n```\n\n",
+                "refusal": null,
+                "reasoning": null,
+                "annotations": [],
+                "images": [
+                    {
+                        "type": "image_url",
+                        "image_url":{
+                            "url": "data:image/png;base64,iVBORw0KGgoAvd/SvXf+MjpXvvmRXFEFc2UakGEHGzYdLFH7q6UqaSdQqxlbZtlKRjze3X/pu78cZyO1elar5i5ebbb82v+fS85y6KIEdxkTaDUyv5Wc8Z+e/+3LVJBVsW2LOvLdO/NBvfjvd+YhLrWr5//6++bikV9PYAgChZd9ZCIEBFE4kgpFVerVS9MSAAizERYXFIQQELxIJ5BFbq9SFrolCIIiyIEZBBkZiKcoM/3NQf2LH3vudl1<TRUNCATED>"
+                        },
+                        "index": 0
+                    }
+                ]
+            }
+        }
+    ],
+    "usage": {
+        "prompt_tokens": 1958,
+        "completion_tokens": 1302,
+        "total_tokens": 3260,
+        "cost": 0.0393174,
+        "is_byok": false,
+        "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+        },
+        "cost_details": {
+            "upstream_inference_cost": null,
+            "upstream_inference_prompt_cost": 0.0005874,
+            "upstream_inference_completions_cost": 0.03873
+        },
+        "completion_tokens_details": {
+            "reasoning_tokens": 0,
+            "image_tokens": 1290
+        }
+    }
+}
