@@ -52,7 +52,10 @@ export class GameScene extends Phaser.Scene {
     // If we have a scanned hero image, load it first then continue setup
     if (this.heroImageData) {
       this.loadScannedHeroImage().then(() => {
-        this.setupGame('scanned_hero');
+        // Only proceed if scene is still active (not destroyed/stopped)
+        if (this.sys.isActive()) {
+          this.setupGame('scanned_hero');
+        }
       });
     } else {
       this.setupGame('hero_placeholder');
@@ -61,13 +64,17 @@ export class GameScene extends Phaser.Scene {
 
   private loadScannedHeroImage(): Promise<void> {
     return new Promise((resolve) => {
-      if (this.textures.exists('scanned_hero')) {
+      // Check if scene is still active before removing texture
+      if (this.sys.isActive() && this.textures.exists('scanned_hero')) {
         this.textures.remove('scanned_hero');
       }
 
       const img = new Image();
       img.onload = () => {
-        this.textures.addImage('scanned_hero', img);
+        // Only add texture if scene is still active
+        if (this.sys.isActive()) {
+          this.textures.addImage('scanned_hero', img);
+        }
         resolve();
       };
       img.onerror = () => {
@@ -334,9 +341,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateLifeStars(): void {
+    // Don't update if scene is being destroyed
+    if (!this.sys.isActive()) return;
+
     const healthPercent = Math.max(0, this.heroHealth / this.maxHealth);
     const activeStars = Math.ceil(healthPercent * 5);
-    
+
     this.lifeStars.forEach((star, index) => {
       if (index < activeStars) {
         star.setTexture('star');
